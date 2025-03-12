@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will you stop talking to me? - Togepi Edition</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #ffe6f2;
+            margin: 0;
+            text-align: center;
+            overflow: hidden;
+            background-image: linear-gradient(to bottom, #ffe6f2, #ffcccc);
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        .image {
+            width: 250px;
+            height: 250px;
+            margin-bottom: 20px;
+            border-radius: 20px;
+            object-fit: cover;
+            border: 3px solid #ffaacc;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #ff66b2;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .buttons {
+            display: flex;
+            gap: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        .btn-yes {
+            background-color: #66ccff;
+            color: white;
+        }
+        .btn-no {
+            background-color: #ff6699;
+            color: white;
+        }
+        .btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        #yayMessage {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 230, 242, 0.9);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .yay-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 80%;
+        }
+        .yay-title {
+            color: #ff66b2;
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        .celebration-img {
+            width: 300px;
+            height: 300px;
+            border-radius: 20px;
+            margin: 20px 0;
+            object-fit: cover;
+            border: 4px solid #ffaacc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://i.imgur.com/dM8HNmy.png" alt="Togepi" class="image" id="mainImage">
+        <h1>Will you stop talking to me?</h1>
+        <div class="buttons">
+            <button class="btn btn-yes" id="yesBtn">Yes</button>
+            <button class="btn btn-no" id="noBtn">No</button>
+        </div>
+    </div>
+
+    <!-- Yay message popup -->
+    <div id="yayMessage">
+        <div class="yay-content">
+            <h2 class="yay-title">Yaay!</h2>
+            <p>Thank you for not stopping our conversation!</p>
+            <img src="https://i.imgur.com/LCLLdfu.png" alt="Happy Togepi" class="celebration-img" id="celebrationImg">
+            <button class="btn btn-no" onclick="resetAndHideYayMessage()">Continue Talking</button>
+        </div>
+    </div>
+
+    <script>
+        // Array of Togepi images
+        const images = [
+            "Normal togepi.jpg", // Normal Togepi
+            "Curious Togepi.avif", // Curious Togepi
+            "Sad Togepi.jpeg", // Sad Togepi
+            "Worried Togepi.webp", // Worried Togepi
+            "VVSAD.jpeg", // Pleading Togepi
+            "Crying Togepi.jpg", // Crying Togepi
+            "Very sad Togepi.gif"  // Very sad Togepi
+        ];
+
+        // Celebration images
+        const celebrationImages = [
+            "Happy dancing Togepi.gif", // Happy dancing Togepi
+            "Excited Togepi.jpeg", // Excited Togepi
+            "Joyful Togepi.gif"  // Joyful Togepi
+        ];
+
+        // Initial button sizes
+        let yesButtonSize = 100; // 100%
+        let noButtonSize = 100;  // 100%
+        let currentPage = 0;
+
+        // Get elements
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const mainImage = document.getElementById('mainImage');
+        const yayMessage = document.getElementById('yayMessage');
+        const celebrationImg = document.getElementById('celebrationImg');
+
+        // Add event listeners
+        yesBtn.addEventListener('click', handleYesClick);
+        noBtn.addEventListener('click', handleNoClick);
+
+        function handleYesClick() {
+            currentPage++;
+            if (currentPage >= images.length) {
+                currentPage = images.length - 1; // Stay on the last (saddest) image
+            }
+            
+            // Update image - show progressively sadder Togepi
+            mainImage.src = images[currentPage];
+            
+            // Shrink "Yes" button and enlarge "No" button
+            yesButtonSize = Math.max(yesButtonSize * 0.6, 5); // Shrink by 40% but not smaller than 5%
+            noButtonSize = Math.min(noButtonSize * 1.4, 250);  // Grow by 40% but not larger than 250%
+            
+            // Apply new sizes
+            yesBtn.style.fontSize = `${0.8 * (yesButtonSize/100)}rem`;
+            yesBtn.style.padding = `${8 * (yesButtonSize/100)}px ${15 * (yesButtonSize/100)}px`;
+            yesBtn.style.opacity = yesButtonSize / 100; // Gradually make it transparent too
+            
+            noBtn.style.fontSize = `${0.8 * (noButtonSize/100)}rem`;
+            noBtn.style.padding = `${8 * (noButtonSize/100)}px ${15 * (noButtonSize/100)}px`;
+            
+            // Add some animation
+            yesBtn.style.transition = "all 0.3s ease";
+            noBtn.style.transition = "all 0.3s ease";
+            mainImage.style.transition = "all 0.5s ease";
+        }
+
+        function handleNoClick() {
+            // Show the Yay message when No is clicked
+            showYayMessage();
+        }
+
+        function showYayMessage() {
+            // Pick a random celebration image of happy Togepi
+            const randomIndex = Math.floor(Math.random() * celebrationImages.length);
+            celebrationImg.src = celebrationImages[randomIndex];
+            
+            // Display the Yay message
+            yayMessage.style.display = 'flex';
+        }
+
+        function resetAndHideYayMessage() {
+            // Hide the Yay message
+            yayMessage.style.display = 'none';
+            
+            // Reset everything to original state
+            yesButtonSize = 100;
+            noButtonSize = 100;
+            currentPage = 0;
+            
+            // Reset the main image to happy Togepi
+            mainImage.src = images[0];
+            
+            // Reset button sizes and styles
+            yesBtn.style.fontSize = '1.2rem';
+            yesBtn.style.padding = '10px 20px';
+            yesBtn.style.opacity = '1';
+            
+            noBtn.style.fontSize = '1.2rem';
+            noBtn.style.padding = '10px 20px';
+        }
+    </script>
+</body>
+</html>
